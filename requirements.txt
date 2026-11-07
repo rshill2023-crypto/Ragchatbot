@@ -1,0 +1,22 @@
+# Web scraping
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=4.9
+
+# Config + secrets
+pyyaml>=6.0
+python-dotenv>=1.0
+
+# RAG stack
+sentence-transformers>=2.2
+chromadb>=0.4
+
+# LLM provider (Groq default)
+groq>=0.9
+
+# UI
+streamlit>=1.30
+
+# Dev
+pytest>=7.4
+ruff>=0.1

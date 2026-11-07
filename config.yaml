@@ -1,0 +1,56 @@
+# Groww Mutual Fund FAQ Assistant — configuration
+# Secrets belong in .env; anything here can be changed without code edits.
+
+ingestion:
+  urls:
+    - https://groww.in/mutual-funds/amc/hdfc-mutual-funds
+    - https://groww.in/mutual-funds/hdfc-large-cap-fund-direct-growth
+    - https://groww.in/mutual-funds/hdfc-equity-fund-direct-growth
+    - https://groww.in/mutual-funds/hdfc-elss-tax-saver-fund-direct-plan-growth
+    - https://groww.in/mutual-funds/hdfc-mid-cap-fund-direct-growth
+  artifacts_dir: data/artifacts
+  timeout_s: 30
+  user_agent: "groww-mf-faq-demo/1.0"
+  rate_limit_rps: 1.0
+
+chunking:
+  strategy: auto          # auto | heading | fixed
+  chunk_size: 512         # tokens
+  chunk_overlap: 64       # tokens
+
+embedding:
+  model: sentence-transformers/all-MiniLM-L6-v2
+  batch_size: 32
+
+vector_db:
+  provider: chromadb
+  collection: groww_mf_faq
+  persist_dir: data/chroma
+  distance: cosine
+
+retrieval:
+  top_k: 5
+  candidate_k: 50       # wider pool, re-ranked with domain keyword focus
+  min_score: 0.2
+
+llm:
+  provider: groq          # groq | gemini | openai | anthropic | mistral
+  model: qwen/qwen3.8-27b
+  temperature: 0.1
+  max_sentences: 3
+
+guardrails:
+  pii_block: true
+  advice_classifier: hybrid   # rules | hybrid
+
+sources:
+  # Every ingestion URL must appear here; citations are restricted to this list.
+  allowlist:
+    - https://groww.in/mutual-funds/amc/hdfc-mutual-funds
+    - https://groww.in/mutual-funds/hdfc-large-cap-fund-direct-growth
+    - https://groww.in/mutual-funds/hdfc-equity-fund-direct-growth
+    - https://groww.in/mutual-funds/hdfc-elss-tax-saver-fund-direct-plan-growth
+    - https://groww.in/mutual-funds/hdfc-mid-cap-fund-direct-growth
+  educational_links:
+    - https://groww.in/mutual-funds/amc/hdfc-mutual-funds
+    - https://investor.sebi.gov.in/

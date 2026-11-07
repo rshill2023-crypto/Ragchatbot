@@ -1,0 +1,21 @@
+# Environment
+.env
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Runtime data (artifacts + vector store)
+data/artifacts/*
+!data/artifacts/.gitkeep
+data/chroma/*
+!data/chroma/.gitkeep
+
+# Streamlit
+.streamlit/
+
+# macOS
+.DS_Store
