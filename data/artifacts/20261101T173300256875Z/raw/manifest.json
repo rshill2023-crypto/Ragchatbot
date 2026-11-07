@@ -1,0 +1,77 @@
+[
+  {
+    "source_url": "https://groww.in/mutual-funds/amc/hdfc-mutual-funds",
+    "page_title": "HDFC Mutual Fund - Latest MF Schemes, NAV, Performance & Returns 2026",
+    "scheme": "HDFC Mutual Fund",
+    "category": "amc",
+    "char_count": 12097,
+    "fetched_at": "2026-11-01T17:33:00.499731+00:00",
+    "http_status": 200,
+    "extraction_warning": null,
+    "status": "ok",
+    "artifacts": {
+      "html": "raw/html/hdfc-mutual-funds.html",
+      "text": "raw/text/hdfc-mutual-funds.txt"
+    }
+  },
+  {
+    "source_url": "https://groww.in/mutual-funds/hdfc-large-cap-fund-direct-growth",
+    "page_title": "HDFC Large Cap Fund Direct Growth - NAV, Mutual Fund Performance & Portfolio",
+    "scheme": "HDFC Large Cap Fund",
+    "category": "large_cap",
+    "char_count": 8817,
+    "fetched_at": "2026-11-01T17:33:01.353216+00:00",
+    "http_status": 200,
+    "extraction_warning": null,
+    "status": "ok",
+    "artifacts": {
+      "html": "raw/html/hdfc-large-cap-fund-direct-growth.html",
+      "text": "raw/text/hdfc-large-cap-fund-direct-growth.txt"
+    }
+  },
+  {
+    "source_url": "https://groww.in/mutual-funds/hdfc-equity-fund-direct-growth",
+    "page_title": "HDFC Flexi Cap Direct Plan Growth - NAV, Mutual Fund Performance & Portfolio",
+    "scheme": "HDFC Flexi Cap Fund",
+    "category": "flexi_cap",
+    "char_count": 10691,
+    "fetched_at": "2026-11-01T17:33:02.360844+00:00",
+    "http_status": 200,
+    "extraction_warning": null,
+    "status": "ok",
+    "artifacts": {
+      "html": "raw/html/hdfc-equity-fund-direct-growth.html",
+      "text": "raw/text/hdfc-equity-fund-direct-growth.txt"
+    }
+  },
+  {
+    "source_url": "https://groww.in/mutual-funds/hdfc-elss-tax-saver-fund-direct-plan-growth",
+    "page_title": "HDFC ELSS Tax Saver Fund Direct Plan Growth - NAV, Mutual Fund Performance & Portfolio",
+    "scheme": "HDFC ELSS Tax Saver Fund",
+    "category": "elss",
+    "char_count": 8976,
+    "fetched_at": "2026-11-01T17:33:03.530416+00:00",
+    "http_status": 200,
+    "extraction_warning": null,
+    "status": "ok",
+    "artifacts": {
+      "html": "raw/html/hdfc-elss-tax-saver-fund-direct-plan-growth.html",
+      "text": "raw/text/hdfc-elss-tax-saver-fund-direct-plan-growth.txt"
+    }
+  },
+  {
+    "source_url": "https://groww.in/mutual-funds/hdfc-mid-cap-fund-direct-growth",
+    "page_title": "HDFC Mid Cap Fund Direct Growth - NAV, Mutual Fund Performance & Portfolio",
+    "scheme": "HDFC Mid Cap Fund",
+    "category": "mid_cap",
+    "char_count": 10373,
+    "fetched_at": "2026-11-01T17:33:04.622515+00:00",
+    "http_status": 200,
+    "extraction_warning": null,
+    "status": "ok",
+    "artifacts": {
+      "html": "raw/html/hdfc-mid-cap-fund-direct-growth.html",
+      "text": "raw/text/hdfc-mid-cap-fund-direct-growth.txt"
+    }
+  }
+]
