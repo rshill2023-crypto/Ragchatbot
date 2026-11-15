@@ -84,7 +84,7 @@ Muted text is `rgba(68, 71, 91, 0.60)` or `rgba(68, 71, 91, 0.40)`. No other hue
 
 **Implementation map.**
 
-- `app/streamlit_app.py` injects `GROWW_CSS` and renders `_header_html()`, `_fund_library_html()`, `_context_html()`, `_assistant_card_html()`, and `_trace_html()`.
+- `app/streamlit_app.py` injects `GROWW_CSS` and renders `_header_html()`, `_fund_library_html()`, `_context_html()`, `_assistant_card_html()`, and `_trace_html()` with `st.html()` so custom markup is not interpreted as Markdown.
 - “New chat” uses the `new_chat` query parameter to clear session messages.
 - The trace accordion reads `retrieval/<query_id>.json` from the latest artifacts run.
 - Empty, loading, answered, refusal, and trace-open states are all represented.

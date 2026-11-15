@@ -787,13 +787,12 @@ def _assistant_card_html(message: Dict[str, Any], config: Any) -> str:
 
 def _render_message(message: Dict[str, Any], config: Any) -> None:
     if message["role"] == "user":
-        st.markdown(
+        st.html(
             '<div class="gw-user-row"><div class="gw-user-bubble">%s</div></div>'
-            % html.escape(str(message["text"])),
-            unsafe_allow_html=True,
+            % html.escape(str(message["text"]))
         )
         return
-    st.markdown(_assistant_card_html(message, config), unsafe_allow_html=True)
+    st.html(_assistant_card_html(message, config))
 
 
 st.set_page_config(
@@ -802,7 +801,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.markdown(GROWW_CSS, unsafe_allow_html=True)
+st.html(GROWW_CSS)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -818,24 +817,23 @@ except Exception as exc:  # pragma: no cover - configuration failure in UI
     st.error("Configuration error: %s" % exc)
     st.stop()
 
-st.markdown(_header_html(), unsafe_allow_html=True)
+st.html(_header_html())
 
 left, center, right = st.columns([0.92, 2.36, 1.02], gap="large")
 
 with left:
-    st.markdown(_fund_library_html(), unsafe_allow_html=True)
+    st.html(_fund_library_html())
 
 with right:
-    st.markdown(_context_html(config), unsafe_allow_html=True)
+    st.html(_context_html(config))
 
 with center:
-    st.markdown('<div id="ask"></div>', unsafe_allow_html=True)
+    st.html('<div id="ask"></div>')
     st.title("Ask a factual question about HDFC mutual funds")
-    st.markdown(
-        '<p class="gw-subtitle">Answers come only from official Groww fund pages. No advice.</p>',
-        unsafe_allow_html=True,
+    st.html(
+        '<p class="gw-subtitle">Answers come only from official Groww fund pages. No advice.</p>'
     )
-    st.markdown('<div class="gw-example-label">Example questions</div>', unsafe_allow_html=True)
+    st.html('<div class="gw-example-label">Example questions</div>')
 
     example_columns = st.columns(3)
     clicked_example = None
@@ -847,11 +845,10 @@ with center:
         for message in st.session_state.messages:
             _render_message(message, config)
     else:
-        st.markdown(
+        st.html(
             '<div class="gw-empty">'
             "Start with an example above or ask your own factual question."
-            "</div>",
-            unsafe_allow_html=True,
+            "</div>"
         )
 
     typed_question = st.chat_input("Ask a factual mutual fund question...")

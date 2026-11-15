@@ -475,7 +475,7 @@ Muted text uses `rgba(68, 71, 91, 0.60)` or `rgba(68, 71, 91, 0.40)`. Do not use
 
 ### Implementation steps
 1. Copy the Stitch export into `docs/stitch/` and keep it checked in.
-2. In `app/streamlit_app.py`, inject `GROWW_CSS` with `st.markdown(..., unsafe_allow_html=True)`.
+2. In `app/streamlit_app.py`, inject `GROWW_CSS` and render custom fragments with `st.html(...)`. Do not use `st.markdown` for HTML panels; Markdown can treat indented markup as code blocks.
 3. Render the sticky header with wordmark, navigation, “Facts only” pill, and “New chat” link.
 4. Build the desktop three-column layout:
    - left: fund library with HDFC fund rows and official-source footer
