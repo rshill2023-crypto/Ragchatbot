@@ -1,6 +1,6 @@
 # Implementation Guide — Groww Mutual Fund FAQ Assistant (RAG Demo)
 
-Simplified, phase-wise build order. Source: `PRD.md` and `architectur.md`.
+Simplified, phase-wise build order. Source: `PRD.md`, `architectur.md`, and the Stitch UI export under `docs/stitch/`.
 
 | Phase | Task | Output |
 |-------|------|--------|
@@ -12,6 +12,7 @@ Simplified, phase-wise build order. Source: `PRD.md` and `architectur.md`.
 | 6 | Store in vector DB | Populated Chroma collection |
 | 7 | Retrieval + UI | Grounded answers in Streamlit |
 | 8 | Guardrails | Edge cases + test cases |
+| 9 | Stitch UI integration | Groww-only production UI + design docs |
 
 ---
 
@@ -39,7 +40,14 @@ ragchatbot/
 ├── data/
 │   ├── artifacts/
 │   └── chroma/
-├── docs/{sources.md, sample_qa.md, disclaimer.md}
+├── docs/
+│   ├── sources.md
+│   ├── sample_qa.md
+│   ├── disclaimer.md
+│   └── stitch/
+│       ├── DESIGN.md
+│       ├── groww_mf_faq_assistant_desktop/{code.html, screen.png}
+│       └── groww_mf_faq_assistant_mobile/{code.html, screen.png}
 └── tests/
 ```
 
@@ -260,7 +268,7 @@ print(build_vector_store(load_config()).count())"
 ## Phase 7 — Retrieval Logic + UI
 
 ### Objective
-Embed the query with the **same** model, retrieve top-k from the **same** Chroma collection, generate a grounded answer with one citation, and show it in a minimal UI.
+Embed the query with the **same** model, retrieve top-k from the **same** Chroma collection, generate a grounded answer with one citation, and show it in the Stitch-derived Groww UI.
 
 ### Files
 ```
@@ -296,6 +304,8 @@ app/streamlit_app.py
 3. Chat input and answer rendering with clickable source link + `Last updated` line.
 4. Distinct style for refusals.
 5. Optional expander: "Show RAG trace" (retrieval scores + artifact paths).
+
+Visual implementation is specified in Phase 9. The UI must follow the Stitch layout and Groww-only palette defined there.
 
 ### Verify
 ```bash
@@ -431,6 +441,80 @@ make test
 
 ---
 
+## Phase 9 — Stitch UI Integration (Groww-only)
+
+### Objective
+Use the Stitch export as the layout and interaction source of truth, then implement it in Streamlit without weakening grounding, safety, or traceability.
+
+### Source files
+```
+docs/stitch/
+├── DESIGN.md
+├── groww_mf_faq_assistant_desktop/
+│   ├── code.html
+│   └── screen.png
+└── groww_mf_faq_assistant_mobile/
+    ├── code.html
+    └── screen.png
+```
+
+### Production design contract
+Use only these colors:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| White | `#FFFFFF` | Page, cards, panels |
+| Groww mint | `#00D09C` | Primary buttons, send action, active indicators |
+| Deep mint | `#00B386` | Hover/pressed states, selected labels |
+| Accent mint | `#04B488` | Informational emphasis |
+| Soft mint tint | `#E0F8EE` | User bubbles, selected rows, callouts |
+| Border/divider | `#F0F0F2` | Hairlines and dividers |
+| Ink | `#44475B` | Text, icons, structure |
+
+Muted text uses `rgba(68, 71, 91, 0.60)` or `rgba(68, 71, 91, 0.40)`. Do not use the Stitch export's lavender surfaces or `#006c4f` primary token in production.
+
+### Implementation steps
+1. Copy the Stitch export into `docs/stitch/` and keep it checked in.
+2. In `app/streamlit_app.py`, inject `GROWW_CSS` with `st.markdown(..., unsafe_allow_html=True)`.
+3. Render the sticky header with wordmark, navigation, “Facts only” pill, and “New chat” link.
+4. Build the desktop three-column layout:
+   - left: fund library with HDFC fund rows and official-source footer
+   - center: hero, examples, chat history, composer
+   - right: active scheme, source count, last-validated date, guardrail chips, disclaimer, answer contract
+5. Render user messages as right-aligned `#E0F8EE` bubbles.
+6. Render assistant messages as white bordered cards with bot identity, source badge, one Groww source link, answer text, and a `<details>` trace section.
+7. Render refusals as neutral cards only; do not use red or error colors.
+8. Implement “New chat” with `st.query_params` and session-state clearing.
+9. Read the displayed date from `latest_source_date(config)` and source count from `config.ingestion.urls`.
+10. Render trace data from `retrieval/<query_id>.json`; do not display prompts or raw model output in the main card.
+11. Add a mobile breakpoint that hides nonessential navigation and keeps cards readable without horizontal scrolling.
+12. Update `tests/test_streamlit_app.py` when the primary heading changes.
+
+### Content safety rules
+- Do not copy illustrative AUM, tax, lock-in, or metric values from the Stitch HTML into the app.
+- Answer text must come only from `pipeline.answer()`.
+- Source links must come from `Answer.source_url` and be checked against `config.sources.allowlist`.
+- Do not add hardcoded fund facts, performance claims, or recommendations to satisfy the visual design.
+- The disclaimer “Facts-only. No investment advice.” must remain visible.
+
+### Verify
+```bash
+make test
+make run
+```
+
+Check:
+- App loads without exceptions.
+- Three example questions are visible.
+- Asking a factual question returns a card with exactly one source link.
+- Refusal queries produce a neutral refusal card.
+- “How this answer was found” opens and shows retrieval rows.
+- “New chat” clears the conversation.
+- Browser is usable at desktop and mobile widths.
+- No non-Groww colors appear in the UI.
+
+---
+
 ## Definition of Done
 
 - [ ] Directory + config created; `make install` works.
@@ -443,4 +527,9 @@ make test
 - [ ] Answers grounded, ≤3 sentences, one citation, `Last updated`.
 - [ ] Guardrail edge cases handled; tests green.
 - [ ] Streamlit UI with 3 examples and disclaimer.
+- [ ] Stitch export checked in under `docs/stitch/`.
+- [ ] UI uses only the Groww palette from Phase 9.
+- [ ] Desktop three-column layout and mobile breakpoint implemented.
+- [ ] Assistant cards show one official source and trace accordion.
+- [ ] No hardcoded fund facts or non-corpus metrics in the UI.
 - [ ] `README.md`, `docs/sources.md`, `docs/sample_qa.md`, `docs/disclaimer.md` complete.

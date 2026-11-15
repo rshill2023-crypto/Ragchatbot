@@ -1,6 +1,6 @@
 # Architecture — Groww Mutual Fund FAQ Assistant (RAG Demo)
 
-Source of truth: `PRD.md`. This document describes how the system is structured, how data flows through each RAG stage, and the interfaces that keep components swappable via config.
+Source of truth: `PRD.md` plus the Stitch UI export under `docs/stitch/`. This document describes how the system is structured, how data flows through each RAG stage, the UI design contract, and the interfaces that keep components swappable via config.
 
 ---
 
@@ -45,6 +45,50 @@ flowchart LR
     end
 ```
 
+### 2.1 UI Design System — Stitch Source of Truth
+
+The production UI layout and component behavior are derived from the checked-in Stitch export:
+
+| Source | Purpose |
+|--------|---------|
+| `docs/stitch/DESIGN.md` | Design principles, typography, spacing, shapes, elevation, and component rules |
+| `docs/stitch/groww_mf_faq_assistant_desktop/code.html` | Desktop layout reference |
+| `docs/stitch/groww_mf_faq_assistant_desktop/screen.png` | Desktop visual reference |
+| `docs/stitch/groww_mf_faq_assistant_mobile/code.html` | Mobile layout reference |
+| `docs/stitch/groww_mf_faq_assistant_mobile/screen.png` | Mobile visual reference |
+
+**Production color contract.** The production implementation uses only the Groww website palette below, regardless of additional Material-style tokens present in the Stitch export:
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--gw-white` | `#FFFFFF` | Page, cards, panels |
+| `--gw-mint` | `#00D09C` | Primary actions, send button, active indicators |
+| `--gw-mint-deep` | `#00B386` | Hover/pressed states, selected labels |
+| `--gw-mint-accent` | `#04B488` | Small informational emphasis |
+| `--gw-mint-soft` | `#E0F8EE` | User bubbles, selected rows, tinted callouts |
+| `--gw-border` | `#F0F0F2` | Hairline borders and dividers |
+| `--gw-ink` | `#44475B` | Text, icons, structural elements |
+
+Muted text is `rgba(68, 71, 91, 0.60)` or `rgba(68, 71, 91, 0.40)`. No other hues are permitted. The Stitch export's lavender surfaces and `#006c4f` primary token are reference-only and must not be used in production.
+
+**Layout contract.**
+
+- Sticky 72px header: Groww MF FAQ wordmark, Ask/Fund library/Sources navigation, “Facts only” pill, and “New chat” action.
+- Desktop: three columns — fund library rail, central chat, and source/context rail.
+- Center column: hero heading, three example questions, chat history, pinned composer.
+- Assistant answer card: bot identity, “Official source” badge, single `groww.in` citation, answer text, and a collapsible “How this answer was found” trace.
+- Refusal state: neutral card using only `#FFFFFF`, `#F0F0F2`, and `#44475B`; no red or alarming color.
+- Mobile: hide nonessential header navigation, retain the facts-only and new-chat controls, and stack content without horizontal scrolling.
+
+**Content rule.** The Stitch HTML contains illustrative fund values (AUM, tax figures, lock-in text, metrics) that are not part of the approved corpus. The production UI must never render those hardcoded values. Answer text comes only from `pipeline.answer()`. Context metadata comes from `config.ingestion.urls`, `config.sources.allowlist`, and `latest_source_date(config)`.
+
+**Implementation map.**
+
+- `app/streamlit_app.py` injects `GROWW_CSS` and renders `_header_html()`, `_fund_library_html()`, `_context_html()`, `_assistant_card_html()`, and `_trace_html()`.
+- “New chat” uses the `new_chat` query parameter to clear session messages.
+- The trace accordion reads `retrieval/<query_id>.json` from the latest artifacts run.
+- Empty, loading, answered, refusal, and trace-open states are all represented.
+
 ---
 
 ## 3. Component Breakdown
@@ -61,7 +105,7 @@ flowchart LR
 | `prompt_builder` | Compose grounded prompt with context + rules | `build(query, chunks) -> str` |
 | `llm` | Provider-agnostic generation adapter | `LLM.generate(prompt) -> str` |
 | `validator` | Enforce answer format (sentences, one link, updated line) | `validate(answer) -> Answer` |
-| `ui` | Streamlit app: welcome, examples, chat, disclaimer | — |
+| `ui` | Stitch-derived Streamlit app: Groww-only theme, fund rail, chat, source rail, trace, disclaimer | `app/streamlit_app.py`, `docs/stitch/` |
 | `artifacts` | Standard writer for every stage's output | `ArtifactWriter.save(stage, payload)` |
 
 ---
@@ -180,7 +224,15 @@ ragchatbot/
 │   └── chroma/
 ├── docs/
 │   ├── sources.md
-│   └── sample_qa.md
+│   ├── sample_qa.md
+│   └── stitch/
+│       ├── DESIGN.md
+│       ├── groww_mf_faq_assistant_desktop/
+│       │   ├── code.html
+│       │   └── screen.png
+│       └── groww_mf_faq_assistant_mobile/
+│           ├── code.html
+│           └── screen.png
 └── tests/
     ├── test_chunker.py
     ├── test_retriever.py
@@ -402,4 +454,4 @@ Environment: `GROQ_API_KEY`, optional `GEMINI_API_KEY`, `OPENAI_API_KEY`, `ANTHR
 | Facts-only + refusal | `guardrails/`, `validator.py`, refusal templates |
 | ≤3 sentences + one citation + updated line | `validator.py` |
 | No PII | `safety/pii.py` |
-| Tiny UI + disclaimer | `app/streamlit_app.py` |
+| Stitch-derived Groww UI + disclaimer | `app/streamlit_app.py`, `docs/stitch/` |

@@ -254,7 +254,7 @@ def test_prompt_contains_rules_and_numbered_context():
 
 
 def test_build_llm_requires_groq_key(monkeypatch):
-    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.setenv("GROQ_API_KEY", "")
     with pytest.raises(LLMError):
         build_llm(load_config().llm)
 

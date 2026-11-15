@@ -26,7 +26,7 @@ def test_app_renders_disclaimer_and_examples():
     app.run()
 
     assert not app.exception
-    assert app.title[0].value == "Groww Mutual Fund FAQ Assistant"
+    assert app.title[0].value == "Ask a factual question about HDFC mutual funds"
     assert len(app.button) == 3
     assert app.chat_input[0].placeholder == "Ask a factual mutual fund question..."
 
